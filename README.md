@@ -1,13 +1,14 @@
 # AudioGAN Project
 
 ###  This project involves creating and training a Generative Adversarial Network (GAN) to generate audio spectrograms and convert them back into audio files. The workflow includes converting audio files to spectrograms, preprocessing those spectrograms, training the GAN, and then converting the generated spectrograms back into audio.
+
 Project Structure
 
-convert_to_spectrograms.py: Converts audio files into spectrogram images.
-preprocess_spectrograms.py: Preprocesses spectrogram images (e.g., resizing or normalizing).
-train_gan.py: Trains a GAN on the preprocessed spectrograms.
-convert_spectrogram_to_wav.py: Converts generated spectrogram images back into audio files.
-run_all_scripts.py: A master script that runs all the above scripts in sequence.
+    convert_to_spectrograms.py: Converts audio files into spectrogram images.
+    preprocess_spectrograms.py: Preprocesses spectrogram images (e.g., resizing or normalizing).
+    train_gan.py: Trains a GAN on the preprocessed spectrograms.
+    convert_spectrogram_to_wav.py: Converts generated spectrogram images back into audio files.
+    run_all_scripts.py: A master script that runs all the above scripts in sequence.
 
 ## Installation
 
@@ -29,6 +30,8 @@ Install the required packages:
     pip install numpy matplotlib pillow librosa tensorflow
 
 ## Usage
+
+Make sure WAV or MP3 files are inside "Input" folder
 
 ### Run scripts individually or run all at once with 'python3 run_all_scripts.py'
 
@@ -67,7 +70,9 @@ Convert generated spectrograms to audio files:
         --input_folder: Directory containing the generated spectrogram images.
         --output_folder: Directory to save the generated audio files.
 
-Run all scripts in sequence:
+
+### Alternatively
+### Run all scripts in sequence:
 
     python3 run_all_scripts.py
     
