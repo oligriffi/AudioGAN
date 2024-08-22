@@ -23,7 +23,7 @@ Clone the repository:
 git clone https://github.com/yourusername/AudioGAN.git
 cd AudioGAN
 
-```bash
+```
 
 Create and activate a virtual environment (optional but recommended):
 
@@ -32,7 +32,7 @@ Create and activate a virtual environment (optional but recommended):
 python3 -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 
-```bash
+```
 
 Install the required packages:
 
@@ -40,7 +40,7 @@ Install the required packages:
 
 pip install numpy matplotlib pillow librosa tensorflow
 
-```bash
+```
 
 ## Usage
 Running Scripts Individually
@@ -48,13 +48,12 @@ Running Scripts Individually
     Convert audio files to spectrograms:
 
     ```bash
-
-python3 convert_to_spectrograms.py --audio_dir "Input" --output_dir "Spectograms"
+    python3 convert_to_spectrograms.py --audio_dir "Input" --output_dir "Spectograms"
 
     --audio_dir: Directory containing the audio files.
     --output_dir: Directory to save the spectrogram images.
 
-```bash
+    ```
 
 Preprocess spectrogram images:
 
@@ -65,7 +64,7 @@ python3 preprocess_spectrograms.py --input_folder "Spectograms" --output_folder 
     --input_folder: Directory containing the raw spectrogram images.
     --output_folder: Directory to save the preprocessed spectrogram images.
 
-```bash
+```
 
 Train the GAN:
 
@@ -79,7 +78,7 @@ python3 train_gan.py --data_dir "PreprocessedSpectrograms" --output_dir "Generat
     --batch_size: Batch size for training.
     --latent_dim: Dimension of the latent vector.
 
-```bash
+```
 
 Convert generated spectrograms to audio files:
 
@@ -90,7 +89,7 @@ Convert generated spectrograms to audio files:
         --input_folder: Directory containing the generated spectrogram images.
         --output_folder: Directory to save the generated audio files.
 
-```bash
+```
 
 ## Using the GUI
 
@@ -99,10 +98,9 @@ The gui_interface.py script provides a graphical user interface for interacting 
 To start the GUI:
 
 ```bash
-
 python3 gui_interface.py
 
-```bash
+```
 
 The GUI includes the following features:
 
