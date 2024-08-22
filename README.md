@@ -43,17 +43,19 @@ pip install numpy matplotlib pillow librosa tensorflow
 ```
 
 ## Usage
+
 Running Scripts Individually
 
-    Convert audio files to spectrograms:
+Convert audio files to spectrograms:
 
-    ```bash
+```bash
+    
     python3 convert_to_spectrograms.py --audio_dir "Input" --output_dir "Spectograms"
 
     --audio_dir: Directory containing the audio files.
     --output_dir: Directory to save the spectrogram images.
 
-    ```
+```
 
 Preprocess spectrogram images:
 
