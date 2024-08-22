@@ -3,9 +3,7 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
-import matplotlib.pyplot as plt
 from pathlib import Path
-import argparse
 
 def build_generator(latent_dim):
     model = Sequential()
@@ -63,38 +61,30 @@ def train_gan(generator, discriminator, gan, data, epochs, batch_size, latent_di
         if (epoch + 1) % (epochs // 10) == 0:
             save_generated_images(generator, output_dir, epoch + 1)
 
-def save_generated_images(generator, output_dir, epoch, num_images=10):
-    output_dir.mkdir(parents=True, exist_ok=True)
-    latent_dim = generator.input_shape[1]
-    noise = np.random.normal(0, 1, (num_images, latent_dim))
-    generated_images = generator.predict(noise)
-    
-    for i in range(num_images):
-        image = generated_images[i, :, :, 0]  # Assuming the shape is (1, height, width, 1)
-        image = (image + 1) / 2.0  # Rescale to [0, 1] if using tanh activation
-        
-        plt.imshow(image, cmap='gray')
-        plt.axis('off')
-        plt.savefig(output_dir / f'generated_spectrogram_epoch_{epoch}_{i}.png', bbox_inches='tight', pad_inches=0)
-        plt.close()
+
+def save_generated_images(generator, output_dir, epoch):
+    # Add your code to save generated images
+    pass
 
 # Main function to run the GAN training
 if __name__ == "__main__":
+    import argparse
     parser = argparse.ArgumentParser(description="Train a GAN on spectrogram data.")
-    parser.add_argument('--data_dir', type=str, required=True, help="Path to the directory containing the preprocessed spectrogram data (npy file).")
-    parser.add_argument('--output_dir', type=str, required=True, help="Path to the directory where generated images will be saved.")
     parser.add_argument('--epochs', type=int, default=10000, help="Number of epochs to train the GAN.")
     parser.add_argument('--batch_size', type=int, default=32, help="Batch size for training.")
     parser.add_argument('--latent_dim', type=int, default=100, help="Dimensionality of the latent space.")
 
     args = parser.parse_args()
 
-    data_dir = Path(args.data_dir)
-    output_dir = Path(args.output_dir)
+    # Define the paths
+    script_dir = Path(__file__).parent
+    data_file = script_dir / 'spectrogram_data.npy'
+    output_dir = script_dir / 'Generated'
+    
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Load the data
-    data = np.load(data_dir / 'spectrogram_data.npy')
+    data = np.load(data_file)
     if data.ndim == 3:
         data = np.expand_dims(data, axis=-1)
 
@@ -108,6 +98,3 @@ if __name__ == "__main__":
 
     # Train the GAN
     train_gan(generator, discriminator, gan, data, epochs=args.epochs, batch_size=args.batch_size, latent_dim=latent_dim, output_dir=output_dir)
-
-    # Generate and save additional images after training
-    save_generated_images(generator, output_dir, 'final', num_images=10)

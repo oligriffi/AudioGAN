@@ -1,91 +1,62 @@
+import os
+from PIL import Image
 import numpy as np
 import librosa
-from scipy.io.wavfile import write
-from PIL import Image
+import soundfile as sf
 import argparse
-import os
-
-def load_spectrogram_image(image_path):
-    # Load the image
-    image = Image.open(image_path).convert('L')  # Convert to grayscale
-    spectrogram = np.array(image)
-
-    # Rescale to [-1, 1] if needed
-    spectrogram = (spectrogram / 255.0) * 2 - 1
-    
-    return spectrogram
-
-def resize_spectrogram(spectrogram, target_width):
-    original_height, original_width = spectrogram.shape
-    if original_width < target_width:
-        # Pad the spectrogram if the width is smaller
-        pad_width = target_width - original_width
-        spectrogram_resized = np.pad(spectrogram, ((0, 0), (0, pad_width)), mode='constant', constant_values=0)
-    elif original_width > target_width:
-        # Crop the spectrogram if the width is larger
-        spectrogram_resized = spectrogram[:, :target_width]
-    else:
-        # No resize needed
-        spectrogram_resized = spectrogram
-    
-    return spectrogram_resized
 
 def spectrogram_to_audio(spectrogram, n_fft=2048, hop_length=512):
-    # Convert from [-1, 1] back to magnitude
-    spectrogram = (spectrogram + 1) / 2.0
+    if len(spectrogram.shape) == 2:
+        spectrogram = np.expand_dims(spectrogram, axis=-1)
     
-    # Resize the spectrogram to match n_fft
-    target_width = n_fft // 2 + 1
-    print(f"Original spectrogram shape: {spectrogram.shape}")
-    print(f"Resizing to width: {target_width}")
-    spectrogram = resize_spectrogram(spectrogram, target_width)
-    
-    print(f"Resized spectrogram shape: {spectrogram.shape}")
-    
-    # Check if the spectrogram needs transposing
-    if spectrogram.shape[0] != n_fft // 2 + 1:
-        spectrogram = spectrogram.T
-    
-    # Perform inverse STFT
-    audio = librosa.istft(spectrogram, hop_length=hop_length, win_length=n_fft, window='hann')
-    
+    audio = librosa.istft(spectrogram.squeeze(), hop_length=hop_length, win_length=n_fft, window='hann')
     return audio
 
-def save_audio_file(audio, file_path, sample_rate=22050):
-    # Save audio as WAV file
-    write(file_path, sample_rate, (audio * 32767).astype(np.int16))  # Convert to 16-bit PCM
-
 def process_and_save_audio(image_path, output_path):
-    # Load the spectrogram image
-    spectrogram = load_spectrogram_image(image_path)
-    
-    # Convert spectrogram to audio
-    audio = spectrogram_to_audio(spectrogram.squeeze())
-    
-    # Save the audio file
-    save_audio_file(audio, output_path)
+    if os.path.exists(output_path):
+        print(f"File {output_path} already exists. Skipping conversion.")
+        return
 
-def convert_all_spectrograms(input_folder, output_folder):
-    # Ensure output directory exists
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    try:
+        # Load and process the spectrogram image
+        print(f"Processing {image_path}")
+        spectrogram = Image.open(image_path).convert('L')
+        spectrogram = np.array(spectrogram)
+        print(f"Spectrogram shape: {spectrogram.shape}")
+
+        # Convert the spectrogram to audio
+        audio = spectrogram_to_audio(spectrogram)
+        print(f"Audio length: {len(audio)} samples")
+
+        # Save the audio to a WAV file
+        sf.write(output_path, audio, 22050)
+        print(f"Converted {image_path} to {output_path}")
+
+    except Exception as e:
+        print(f"An error occurred while processing {image_path}: {e}")
+
+def convert_all_spectrograms(input_dir, output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    files_converted = 0
+    print(f"Scanning directory: {input_dir}")
     
-    # Process each .png file in the input folder
-    for filename in os.listdir(input_folder):
-        if filename.endswith(".png"):
-            image_path = os.path.join(input_folder, filename)
-            output_filename = os.path.splitext(filename)[0] + ".wav"
-            output_path = os.path.join(output_folder, output_filename)
-            
-            print(f"Processing {image_path}...")
+    for file_name in os.listdir(input_dir):
+        print(f"Found file: {file_name}")  # Debug: print each file found
+        if file_name.lower().endswith('.png'):
+            image_path = os.path.join(input_dir, file_name)
+            output_path = os.path.join(output_dir, file_name.replace('.png', '.wav'))
             process_and_save_audio(image_path, output_path)
-            print(f"Saved {output_path}")
+            files_converted += 1
+
+    print(f"Total files converted: {files_converted}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Convert spectrogram images to WAV files.")
-    parser.add_argument('--input_folder', type=str, required=True, help="Folder containing the spectrogram images.")
-    parser.add_argument('--output_folder', type=str, required=True, help="Folder to save the output WAV files.")
+    parser = argparse.ArgumentParser(description="Convert all PNG spectrograms to WAV files.")
+    parser.add_argument('--input_dir', type=str, required=True, help="Directory containing the spectrogram PNG files.")
+    parser.add_argument('--output_dir', type=str, required=True, help="Directory to save the converted WAV files.")
     
     args = parser.parse_args()
-    
-    convert_all_spectrograms(args.input_folder, args.output_folder)
+
+    convert_all_spectrograms(args.input_dir, args.output_dir)
