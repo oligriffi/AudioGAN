@@ -97,6 +97,9 @@ Convert generated spectrograms to audio files:
 
 The gui_interface.py script provides a graphical user interface for interacting with the scripts. You can use it to convert spectrograms, preprocess them, train the GAN, generate new spectrograms, and convert them back to audio files.
 
+![GUI Screenshot](https://github.com/oligriffi/AudioGAN/blob/main/GUI_Screenshot.png)
+
+
 To start the GUI:
 
 ```bash
