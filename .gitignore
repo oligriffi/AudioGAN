@@ -4,3 +4,4 @@
 *.mp3
 *.wav
 spectrogram_data.npy
+/audiogan_env
